@@ -2,18 +2,24 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
-updates:
 
+updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
-      - "dependencies"
+      - "P3 - Low"
+      - "T4 - Dependabot"
+    reviewers:
+      - "castelnuovo/developers"
 
   - package-ecosystem: "composer"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
-      - "dependencies"
+      - "P3 - Low"
+      - "T4 - Dependabot"
+    reviewers:
+      - "castelnuovo/developers"
