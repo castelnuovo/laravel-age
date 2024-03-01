@@ -42,7 +42,7 @@ return [
 ## Usage
 
 ```php
-use Castelnuovo\LaravelAge;
+use Castelnuovo\LaravelAge\LaravelAge;
 
 $message = 'Hello World!';
 
