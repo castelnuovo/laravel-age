@@ -58,14 +58,13 @@ class PrivateKey
      */
     public function decrypt(string $message, bool $base64): string
     {
-        $dir = TemporaryDirectory::make();
-        $disk = Storage::build(['driver' => 'local', 'root' => $dir->path()]);
-
         $ulid = Str::ulid();
-        $disk->put($ulid, $base64 ? base64_decode($message) : $message);
+        $dir = TemporaryDirectory::make()->deleteWhenDestroyed();
+
+        $data = $base64 ? base64_decode(str_replace(['-', '_'], ['+', '/'], $message)) : $message;
+        Storage::build(['driver' => 'local', 'root' => $dir->path()])->put($ulid, $data);
 
         $result = Process::input($this->encode())->run("age -d -i - {$dir->path($ulid)}");
-        $dir->delete();
 
         if ($result->failed()) {
             throw new Exception('Failed to decrypt message!');
