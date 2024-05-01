@@ -14,7 +14,7 @@ class PrivateKey
 
     public function __construct(string $privateKey = '')
     {
-        if (! $privateKey) {
+        if (!$privateKey) {
             $result = Process::pipe([
                 'age-keygen',
                 'grep -E "^AGE-SECRET-KEY-[A-Za-z0-9]{59}$"',
@@ -29,7 +29,7 @@ class PrivateKey
 
         $privateKey = str($privateKey)->trim();
 
-        if (! $privateKey->startsWith('AGE-SECRET-KEY-') || $privateKey->length() !== 74) {
+        if (!$privateKey->startsWith('AGE-SECRET-KEY-') || $privateKey->length() !== 74) {
             throw new Exception('Invalid private key provided!');
         }
 
@@ -58,14 +58,13 @@ class PrivateKey
      */
     public function decrypt(string $message, bool $base64): string
     {
-        $dir = TemporaryDirectory::make();
-        $disk = Storage::build(['driver' => 'local', 'root' => $dir->path()]);
-
         $ulid = Str::ulid();
-        $disk->put($ulid, $base64 ? base64_decode($message) : $message);
+        $dir = TemporaryDirectory::make()->deleteWhenDestroyed();
+
+        $data = $base64 ? base64_decode(str_replace(['-', '_'], ['+', '/'], $message)) : $message;
+        Storage::build(['driver' => 'local', 'root' => $dir->path()])->put($ulid, $data);
 
         $result = Process::input($this->encode())->run("age -d -i - {$dir->path($ulid)}");
-        $dir->delete();
 
         if ($result->failed()) {
             throw new Exception('Failed to decrypt message!');
