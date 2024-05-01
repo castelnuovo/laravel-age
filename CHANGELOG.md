@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-age` will be documented in this file.
 
+## v1.2.0 - 2024-05-01
+
+### What's Changed
+
+* Handle Base64 URL safe encoding by @lucacastelnuovo in https://github.com/castelnuovo/laravel-age/pull/6
+
+**Full Changelog**: https://github.com/castelnuovo/laravel-age/compare/v1.1.0...v1.2.0
+
 ## v1.1.0 - 2024-05-01
 
 ### What's Changed
