@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\TemporaryDirectory\TemporaryDirectory;
 
 class PrivateKey
 {
@@ -57,13 +58,14 @@ class PrivateKey
      */
     public function decrypt(string $message, bool $base64): string
     {
+        $dir = TemporaryDirectory::make();
+        $disk = Storage::build(['driver' => 'local', 'root' => $dir->path()]);
+
         $ulid = Str::ulid();
-        Storage::put($ulid, $base64 ? base64_decode($message) : $message);
+        $disk->put($ulid, $base64 ? base64_decode($message) : $message);
 
-        $path = Storage::path($ulid);
-        $result = Process::input($this->encode())->run("age -d -i - {$path}");
-
-        Storage::delete($ulid);
+        $result = Process::input($this->encode())->run("age -d -i - {$dir->path($ulid)}");
+        $dir->delete();
 
         if ($result->failed()) {
             throw new Exception('Failed to decrypt message!');
