@@ -14,7 +14,7 @@ class PublicKey
     {
         $publicKey = str($publicKey)->trim();
 
-        if (!$publicKey->startsWith('age') || $publicKey->length() !== 62) {
+        if (! $publicKey->startsWith('age') || $publicKey->length() !== 62) {
             throw new Exception('Invalid public key provided!');
         }
 
