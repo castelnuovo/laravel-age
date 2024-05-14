@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
+use Symfony\Component\Process\ExecutableFinder;
 
 class PrivateKey
 {
@@ -64,7 +65,21 @@ class PrivateKey
         $data = $base64 ? base64_decode(str_replace(['-', '_'], ['+', '/'], $message)) : $message;
         Storage::build(['driver' => 'local', 'root' => $dir->path()])->put($ulid, $data);
 
-        $result = Process::input($this->encode())->run("age -d -i - {$dir->path($ulid)}");
+        /**
+         * @var array<string>|string|null
+         */
+        $command = [
+            (new ExecutableFinder())->find('age', 'age', [
+                '/usr/local/bin',
+                '/opt/homebrew/bin',
+            ]),
+            '-d',
+            '-i',
+            '-',
+            $dir->path($ulid),
+        ];
+
+        $result = Process::input($this->encode())->run($command);
 
         if ($result->failed()) {
             throw new Exception('Failed to decrypt message!');
