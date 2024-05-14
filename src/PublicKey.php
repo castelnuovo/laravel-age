@@ -4,6 +4,7 @@ namespace Castelnuovo\LaravelAge;
 
 use Exception;
 use Illuminate\Support\Facades\Process;
+use Symfony\Component\Process\ExecutableFinder;
 
 class PublicKey
 {
@@ -31,7 +32,16 @@ class PublicKey
      */
     public function encrypt(string $message, bool $base64): string
     {
-        $result = Process::input($message)->run("age -r {$this->encode()}");
+        $command = [
+            (new ExecutableFinder())->find('age', 'age', [
+                '/usr/local/bin',
+                '/opt/homebrew/bin',
+            ]),
+            '-r',
+            $this->encode(),
+        ];
+
+        $result = Process::input($message)->run($command);
 
         if ($result->failed()) {
             throw new Exception('Failed to encrypt message!');
