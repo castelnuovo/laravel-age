@@ -14,7 +14,7 @@ class PublicKey
     {
         $publicKey = str($publicKey)->trim();
 
-        if (! $publicKey->startsWith('age') || $publicKey->length() !== 62) {
+        if (!$publicKey->startsWith('age') || $publicKey->length() !== 62) {
             throw new Exception('Invalid public key provided!');
         }
 
@@ -32,6 +32,9 @@ class PublicKey
      */
     public function encrypt(string $message, bool $base64): string
     {
+        /**
+         * @var array<string>|string|null
+         */
         $command = [
             (new ExecutableFinder())->find('age', 'age', [
                 '/usr/local/bin',

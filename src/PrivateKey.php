@@ -15,7 +15,7 @@ class PrivateKey
 
     public function __construct(string $privateKey = '')
     {
-        if (! $privateKey) {
+        if (!$privateKey) {
             $result = Process::pipe([
                 'age-keygen',
                 'grep -E "^AGE-SECRET-KEY-[A-Za-z0-9]{59}$"',
@@ -30,7 +30,7 @@ class PrivateKey
 
         $privateKey = str($privateKey)->trim();
 
-        if (! $privateKey->startsWith('AGE-SECRET-KEY-') || $privateKey->length() !== 74) {
+        if (!$privateKey->startsWith('AGE-SECRET-KEY-') || $privateKey->length() !== 74) {
             throw new Exception('Invalid private key provided!');
         }
 
@@ -65,6 +65,9 @@ class PrivateKey
         $data = $base64 ? base64_decode(str_replace(['-', '_'], ['+', '/'], $message)) : $message;
         Storage::build(['driver' => 'local', 'root' => $dir->path()])->put($ulid, $data);
 
+        /**
+         * @var array<string>|string|null
+         */
         $command = [
             (new ExecutableFinder())->find('age', 'age', [
                 '/usr/local/bin',
