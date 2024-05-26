@@ -4,14 +4,14 @@ namespace Castelnuovo\LaravelAge;
 
 use Exception;
 
-class LaravelAge
+class Age
 {
     public function __construct(private ?PrivateKey $privateKey = null, private ?PublicKey $publicKey = null)
     {
         /* If no keys are provided, use the one from .env or create a pair. */
         if (! isset($privateKey) && ! isset($publicKey)) {
             /** @phpstan-ignore-next-line */
-            $this->privateKey = new PrivateKey(config('laravel-age.identity'));
+            $this->privateKey = PrivateKey::generate();
             $this->publicKey = $this->privateKey->getPublicKey();
         }
 
@@ -21,11 +21,11 @@ class LaravelAge
         }
     }
 
-    public static function generateKeypair(): LaravelAge
+    public static function generateKeypair(): Age
     {
-        $privateKey = new PrivateKey();
+        $privateKey = PrivateKey::generate();
 
-        return new LaravelAge($privateKey, $privateKey->getPublicKey());
+        return new Age($privateKey, $privateKey->getPublicKey());
     }
 
     public function getPublicKey(): PublicKey

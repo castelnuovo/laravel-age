@@ -5,12 +5,12 @@ namespace Castelnuovo\LaravelAge\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Castelnuovo\LaravelAge\LaravelAge
+ * @see \Castelnuovo\LaravelAge\Age
  */
-class LaravelAge extends Facade
+class Age extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return \Castelnuovo\LaravelAge\LaravelAge::class;
+        return \Castelnuovo\LaravelAge\Age::class;
     }
 }

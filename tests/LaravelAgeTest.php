@@ -1,15 +1,15 @@
 <?php
 
-use Castelnuovo\LaravelAge\LaravelAge;
+use Castelnuovo\LaravelAge\Age;
 use Castelnuovo\LaravelAge\PrivateKey;
 use Castelnuovo\LaravelAge\PublicKey;
 
 it('can generate private key', function () {
-    expect((new PrivateKey())->encode())->toBeString();
+    expect(PrivateKey::generate()->encode())->toBeString();
 });
 
 it('can generate public key', function () {
-    $publicKey = (new PrivateKey())->getPublicKey();
+    $publicKey = PrivateKey::generate()->getPublicKey();
 
     expect($publicKey->encode())->toBeString();
 });
@@ -37,9 +37,9 @@ it('cannot intialize with invalid public key', function () {
 })->throws(Exception::class);
 
 it('can generate keypair', function () {
-    $age = LaravelAge::generateKeypair();
+    $age = Age::generateKeypair();
 
-    expect($age)->toBeInstanceOf(LaravelAge::class);
+    expect($age)->toBeInstanceOf(Age::class);
     expect($age->getPrivateKey())->toBeInstanceOf(PrivateKey::class);
     expect($age->getPublicKey())->toBeInstanceOf(PublicKey::class);
 });
@@ -47,7 +47,7 @@ it('can generate keypair', function () {
 it('can encrypt with an provided private key', function () {
     $encodeKey = 'AGE-SECRET-KEY-1TKGRTQP4H79MTNHVDRSA3L0CS7MFSMW0DQX80CWP0JDUFL97RRJSPK9777';
     $privateKey = new PrivateKey($encodeKey);
-    $age = new LaravelAge(privateKey: $privateKey);
+    $age = new Age(privateKey: $privateKey);
 
     expect($age->encrypt('message'))->toBeString();
 });
@@ -55,7 +55,7 @@ it('can encrypt with an provided private key', function () {
 it('can encrypt with an provided public key', function () {
     $encodeKey = 'age1xqrfpqxz55ersvu6mmhwzcctqk27ppnatms7p9zruclrm8tt4y0q3apxuc';
     $publicKey = new PublicKey($encodeKey);
-    $age = new LaravelAge(publicKey: $publicKey);
+    $age = new Age(publicKey: $publicKey);
 
     expect($age->encrypt('message'))->toBeString();
 });
@@ -63,7 +63,7 @@ it('can encrypt with an provided public key', function () {
 it('can decrypt with an provided private key (using base64)', function () {
     $encodeKey = 'AGE-SECRET-KEY-1TKGRTQP4H79MTNHVDRSA3L0CS7MFSMW0DQX80CWP0JDUFL97RRJSPK9777';
     $privateKey = new PrivateKey($encodeKey);
-    $age = new LaravelAge(privateKey: $privateKey);
+    $age = new Age(privateKey: $privateKey);
 
     $message = 'Hello, World!';
     $encrypted = $age->encrypt($message);
@@ -75,7 +75,7 @@ it('can decrypt with an provided private key (using base64)', function () {
 it('can decrypt with an provided private key (without using base64)', function () {
     $encodeKey = 'AGE-SECRET-KEY-1TKGRTQP4H79MTNHVDRSA3L0CS7MFSMW0DQX80CWP0JDUFL97RRJSPK9777';
     $privateKey = new PrivateKey($encodeKey);
-    $age = new LaravelAge(privateKey: $privateKey);
+    $age = new Age(privateKey: $privateKey);
 
     $message = 'Hello, World!';
     $encrypted = $age->encrypt($message, false);
@@ -87,7 +87,7 @@ it('can decrypt with an provided private key (without using base64)', function (
 it('cannot decrypt with an provided public key', function () {
     $encodeKey = 'age1xqrfpqxz55ersvu6mmhwzcctqk27ppnatms7p9zruclrm8tt4y0q3apxuc';
     $publicKey = new PublicKey($encodeKey);
-    $age = new LaravelAge(publicKey: $publicKey);
+    $age = new Age(publicKey: $publicKey);
 
     $message = 'Hello, World!';
     $encrypted = $age->encrypt($message);
@@ -97,7 +97,7 @@ it('cannot decrypt with an provided public key', function () {
 it('cannot decrypt with an provided private key (using base64 only to encrypt)', function () {
     $encodeKey = 'age1xqrfpqxz55ersvu6mmhwzcctqk27ppnatms7p9zruclrm8tt4y0q3apxuc';
     $publicKey = new PublicKey($encodeKey);
-    $age = new LaravelAge(publicKey: $publicKey);
+    $age = new Age(publicKey: $publicKey);
 
     $message = 'Hello, World!';
     $encrypted = $age->encrypt($message);
@@ -107,7 +107,7 @@ it('cannot decrypt with an provided private key (using base64 only to encrypt)',
 it('cannot decrypt with an provided private key (using base64 only to decrypt)', function () {
     $encodeKey = 'age1xqrfpqxz55ersvu6mmhwzcctqk27ppnatms7p9zruclrm8tt4y0q3apxuc';
     $publicKey = new PublicKey($encodeKey);
-    $age = new LaravelAge(publicKey: $publicKey);
+    $age = new Age(publicKey: $publicKey);
 
     $message = 'Hello, World!';
     $encrypted = $age->encrypt($message, false);
@@ -117,14 +117,14 @@ it('cannot decrypt with an provided private key (using base64 only to decrypt)',
 it('runs usage code from readme', function () {
     $message = 'Hello World!';
 
-    $age = LaravelAge::generateKeypair();
+    $age = Age::generateKeypair();
     $privateKey = $age->getPrivateKey();
     $publicKey = $age->getPublicKey();
 
-    $age2 = new LaravelAge(publicKey: $publicKey);
+    $age2 = new Age(publicKey: $publicKey);
     $encrypted_message = $age2->encrypt($message);
 
-    $age3 = new LaravelAge(privateKey: $privateKey);
+    $age3 = new Age(privateKey: $privateKey);
     $decrypted_message = $age3->decrypt($encrypted_message);
 
     expect($message)->toBe($decrypted_message);
