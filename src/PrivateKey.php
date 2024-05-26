@@ -13,21 +13,8 @@ class PrivateKey
 {
     private string $privateKey;
 
-    public function __construct(string $privateKey = '')
+    public function __construct(string $privateKey)
     {
-        if (! $privateKey) {
-            $result = Process::pipe([
-                'age-keygen',
-                'grep -E "^AGE-SECRET-KEY-[A-Za-z0-9]{59}$"',
-            ]);
-
-            if ($result->failed()) {
-                throw new Exception('Failed to generate private key!');
-            }
-
-            $privateKey = $result->output();
-        }
-
         $privateKey = str($privateKey)->trim();
 
         if (! $privateKey->startsWith('AGE-SECRET-KEY-') || $privateKey->length() !== 74) {
@@ -35,6 +22,20 @@ class PrivateKey
         }
 
         $this->privateKey = $privateKey;
+    }
+
+    public static function generate(): self
+    {
+        $result = Process::pipe([
+            'age-keygen',
+            'grep -E "^AGE-SECRET-KEY-[A-Za-z0-9]{59}$"',
+        ]);
+
+        if ($result->failed()) {
+            throw new Exception('Failed to generate private key!');
+        }
+
+        return new self($result->output());
     }
 
     public function encode(): string
@@ -62,7 +63,11 @@ class PrivateKey
         $ulid = Str::ulid();
         $dir = TemporaryDirectory::make()->deleteWhenDestroyed();
 
-        $data = $base64 ? base64_decode(str_replace(['-', '_'], ['+', '/'], $message)) : $message;
+        $data = $base64 ? base64_decode($message, strict: true) : $message;
+        if (! $data) {
+            throw new Exception('Invalid message provided!');
+        }
+
         Storage::build(['driver' => 'local', 'root' => $dir->path()])->put($ulid, $data);
 
         /**

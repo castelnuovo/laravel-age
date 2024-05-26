@@ -25,35 +25,21 @@ You can install the package via composer:
 composer require castelnuovo/laravel-age
 ```
 
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="laravel-age-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-    'identity' => env('AGE_IDENTITY')
-];
-```
-
 ## Usage
 
 ```php
-use Castelnuovo\LaravelAge\LaravelAge;
+use Castelnuovo\LaravelAge\Age;
 
 $message = 'Hello World!';
 
-$age = LaravelAge::generateKeypair();
+$age = Age::generateKeypair();
 $privateKey = $age->getPrivateKey();
 $publicKey = $age->getPublicKey();
 
-$age2 = new LaravelAge(publicKey: $publicKey);
+$age2 = new Age(publicKey: $publicKey);
 $encrypted_message = $age2->encrypt($message);
 
-$age3 = new LaravelAge(privateKey: $privateKey);
+$age3 = new Age(privateKey: $privateKey);
 $decrypted_message = $age3->decrypt($encrypted_message);
 
 echo $message === $decrypted_message ? 'Success' : 'Failed';

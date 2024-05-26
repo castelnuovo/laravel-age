@@ -74,10 +74,7 @@
         "laravel": {
             "providers": [
                 "Castelnuovo\\LaravelAge\\LaravelAgeServiceProvider"
-            ],
-            "aliases": {
-                "LaravelAge": "Castelnuovo\\LaravelAge\\Facades\\LaravelAge"
-            }
+            ]
         }
     },
     "minimum-stability": "dev",

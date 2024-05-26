@@ -15,7 +15,6 @@ class LaravelAgeServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('laravel-age')
-            ->hasConfigFile();
+            ->name('laravel-age');
     }
 }
