@@ -10,7 +10,6 @@ class Age
     {
         /* If no keys are provided, use the one from .env or create a pair. */
         if (! isset($privateKey) && ! isset($publicKey)) {
-            /** @phpstan-ignore-next-line */
             $this->privateKey = PrivateKey::generate();
             $this->publicKey = $this->privateKey->getPublicKey();
         }

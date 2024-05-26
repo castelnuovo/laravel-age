@@ -64,6 +64,10 @@ class PrivateKey
         $dir = TemporaryDirectory::make()->deleteWhenDestroyed();
 
         $data = $base64 ? base64_decode($message, strict: true) : $message;
+        if (! $data) {
+            throw new Exception('Invalid message provided!');
+        }
+
         Storage::build(['driver' => 'local', 'root' => $dir->path()])->put($ulid, $data);
 
         /**
