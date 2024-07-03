@@ -45,7 +45,18 @@ class PrivateKey
 
     public function getPublicKey(): PublicKey
     {
-        $result = Process::input($this->encode())->run('age-keygen -y');
+        /**
+         * @var array<string>|string|null
+         */
+        $command = [
+            (new ExecutableFinder())->find('age-keygen', 'age-keygen', [
+                '/usr/local/bin',
+                '/opt/homebrew/bin',
+            ]),
+            '-y',
+        ];
+
+        $result = Process::input($this->encode())->run($command);
 
         if ($result->failed()) {
             throw new Exception('Failed to generate public key!');
